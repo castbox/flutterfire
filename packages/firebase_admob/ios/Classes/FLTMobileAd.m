@@ -9,8 +9,9 @@
 static NSMutableDictionary *allAds = nil;
 static NSDictionary *statusToString = nil;
 
-@implementation FLTMobileAd
-NSNumber *_mobileAdId;
+@implementation FLTMobileAd {
+  NSNumber *_mobileAdId;
+}
 FlutterMethodChannel *_channel;
 FLTMobileAdStatus _status;
 double _anchorOffset;
