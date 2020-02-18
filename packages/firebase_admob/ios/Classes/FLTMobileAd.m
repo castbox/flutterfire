@@ -9,11 +9,17 @@
 static NSMutableDictionary *allAds = nil;
 static NSDictionary *statusToString = nil;
 
+@interface FLTMobileAd ()
+
+@property(nonatomic, assign) FLTMobileAdStatus status;
+
+@end
+
 @implementation FLTMobileAd {
   NSNumber *_mobileAdId;
 }
 FlutterMethodChannel *_channel;
-FLTMobileAdStatus _status;
+//FLTMobileAdStatus _status;
 double _anchorOffset;
 double _horizontalCenterOffset;
 int _anchorType;
@@ -54,7 +60,7 @@ int _anchorType;
   if (self) {
     _mobileAdId = mobileAdId;
     _channel = channel;
-    _status = CREATED;
+    self.status = CREATED;
     _anchorOffset = 0;
     _horizontalCenterOffset = 0;
     _anchorType = 0;
@@ -96,7 +102,7 @@ int _anchorType;
 }
 
 - (NSString *)description {
-  NSString *statusString = (NSString *)statusToString[[NSNumber numberWithInt:_status]];
+  NSString *statusString = (NSString *)statusToString[[NSNumber numberWithInt:self.status]];
   return [NSString
       stringWithFormat:@"%@ %@ mobileAdId:%@", super.description, statusString, _mobileAdId];
 }
@@ -127,8 +133,8 @@ GADAdSize _adSize;
 }
 
 - (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
-  if (_status != CREATED) return;
-  _status = LOADING;
+  if (self.status != CREATED) return;
+  self.status = LOADING;
   _banner = [[GADBannerView alloc] initWithAdSize:_adSize];
   _banner.delegate = self;
   _banner.adUnitID = adUnitId;
@@ -138,12 +144,12 @@ GADAdSize _adSize;
 }
 
 - (void)show {
-  if (_status == LOADING) {
-    _status = PENDING;
+  if (self.status == LOADING) {
+    self.status = PENDING;
     return;
   }
 
-  if (_status != LOADED) return;
+  if (self.status != LOADED) return;
 
   _banner.translatesAutoresizingMaskIntoConstraints = NO;
   UIView *screen = [FLTMobileAd rootViewController].view;
@@ -181,8 +187,8 @@ GADAdSize _adSize;
 }
 
 - (void)adViewDidReceiveAd:(GADBannerView *)adView {
-  bool statusWasPending = _status == PENDING;
-  _status = LOADED;
+  bool statusWasPending = self.status == PENDING;
+  self.status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
   if (statusWasPending) [self show];
 }
@@ -230,8 +236,8 @@ GADInterstitial *_interstitial;
 }
 
 - (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
-  if (_status != CREATED) return;
-  _status = LOADING;
+  if (self.status != CREATED) return;
+  self.status = LOADING;
 
   _interstitial = [[GADInterstitial alloc] initWithAdUnitID:adUnitId];
   _interstitial.delegate = self;
@@ -240,18 +246,18 @@ GADInterstitial *_interstitial;
 }
 
 - (void)show {
-  if (_status == LOADING) {
-    _status = PENDING;
+  if (self.status == LOADING) {
+    self.status = PENDING;
     return;
   }
-  if (_status != LOADED) return;
+  if (self.status != LOADED) return;
 
   [_interstitial presentFromRootViewController:[FLTMobileAd rootViewController]];
 }
 
 - (void)interstitialDidReceiveAd:(GADInterstitial *)ad {
-  bool statusWasPending = _status == PENDING;
-  _status = LOADED;
+  bool statusWasPending = self.status == PENDING;
+  self.status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
   if (statusWasPending) [self show];
 }
