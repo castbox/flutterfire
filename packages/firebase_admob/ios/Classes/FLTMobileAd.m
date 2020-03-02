@@ -45,6 +45,7 @@ int _anchorType;
 
 + (void)configureWithAppId:(NSString *)appId {
   [GADMobileAds configureWithApplicationID:appId];
+  [GADMobileAds sharedInstance].applicationVolume = 0;
 }
 
 + (FLTMobileAd *)getAdForId:(NSNumber *)mobileAdId {

@@ -75,6 +75,7 @@ public class FirebaseAdMobPlugin implements FlutterPlugin, ActivityAware, Method
       return;
     }
     MobileAds.initialize(applicationContext, appId);
+    MobileAds.setAppVolume(0);
     result.success(Boolean.TRUE);
   }
 
